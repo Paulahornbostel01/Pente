@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -37,6 +39,8 @@ public class PenteScore extends JPanel implements ActionListener
 	Font myFont = new Font ("Arial", Font.PLAIN, 24);
 	private Color bStoneTextColor = new Color(11, 13, 48);
 	private PenteGameBoard myBoard = null;
+	
+	private boolean firstGame = true;
 	
 	public PenteScore(int w, int h)
 	{
@@ -173,8 +177,12 @@ public class PenteScore extends JPanel implements ActionListener
 		if(whichPlayer == PenteGameBoard.BLACKSTONE)
 		{
 			p1Captures.setText(Integer.toString(c));
+			Rectangle r = p1Captures.getVisibleRect();
+			p1Captures.paintImmediately(r);
 		}else {
 			p2Captures.setText(Integer.toString(c));
+			Rectangle r = p2Captures.getVisibleRect();
+			p2Captures.paintImmediately(r);
 		}
 		
 		repaint();
@@ -204,7 +212,16 @@ public class PenteScore extends JPanel implements ActionListener
 			
 			whoseTurnField.setText("It is " + n + "'s turn now");
 		}
+		
+		if(firstGame)
+		{
+			whoseTurnField.repaint();
+		}else {
+			Rectangle r = whoseTurnField.getVisibleRect();
+			whoseTurnField.paintImmediately(r);
+		}
 	}
+		
 	
 	public void setGameBoard(PenteGameBoard gb)
 	{
@@ -216,6 +233,8 @@ public class PenteScore extends JPanel implements ActionListener
 		// TODO Auto-generated method stub
 		
 		
+		JOptionPane.showMessageDialog(null, "Starting new game!");
+		firstGame = false;
 		if(myBoard != null) myBoard.startNewGame(false);
 		
 	}

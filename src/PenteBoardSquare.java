@@ -34,6 +34,8 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 	private Color wStoneBoardShadow= new Color (66, 65, 64);
 	private Color wStoneHighlight= new Color (255, 255, 255);
 	private Color hoverColor = new Color (132, 163, 206);
+	private boolean isWinningSquare = false;
+	private Color winningSquareColor = new Color (242, 230,96);
 	
 	
 	boolean isInner = false;
@@ -122,6 +124,20 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 					90);
 			
 			g2.setStroke(new BasicStroke(1));
+			
+			
+			//Paint the winning square
+			if(isWinningSquare)
+			{
+				g2.setStroke(new BasicStroke(2));
+				g2.setColor(winningSquareColor);
+				g2.drawOval(xLoc + 2, yLoc + 2, sWidth - 4, sHeight-4);
+				g2.setStroke(new BasicStroke(1));
+				
+				
+				
+				
+			}
 			
 		}
 		
@@ -314,6 +330,12 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void setWinningSquare (boolean newState)
+	{
+		isWinningSquare = newState;
+	}
+	
 	
 	
 }

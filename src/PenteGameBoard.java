@@ -14,15 +14,15 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final int EMPTY = 0;
-	public static final int BLACKSTONE = -1;
-	public static final int WHITESTONE = 1;
+	public static final int BLACKSTONE = 1;
+	public static final int WHITESTONE = -1;
 	public static final int NUM_SQUARES_SIDE = 19;
 	public static final int INNER_START = 7;
 	public static final int INNER_END = 11;
 	public static final int PLAYER1_TURN = 1;
 	public static final int PLAYER2_TURN = -1;
 	public static final int MAX_CAPTURES = 10;
-	public static final int SLEEP_TIME = 250;
+	public static final int SLEEP_TIME = 100;
 
 	private int bWidth, bHeight;
 	
@@ -122,17 +122,22 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 			for (int col = 0; col < NUM_SQUARES_SIDE; col ++)
 			{
 				gameBoard[row][col].setState(EMPTY);
+				gameBoard[row][col].setWinningSquare(false);
 			}
 		}
-	//	this.paintImmediately(0,0, this.bWidth, this.bHeight);
+		this.paintImmediately(0,0, this.bWidth, this.bHeight);
+		
+		p1Captures = 0;
+		p2Captures = 0;
+		gameOver = false;
 	}
 	
 	public void startNewGame(boolean firstGame)
 	{
-		//resetBoard();
 		
 		p1Captures = 0;
 		p2Captures = 0;
+		gameOver = false;
 		
 		JOptionPane myPane = new JOptionPane();
 		
@@ -238,14 +243,14 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 						
 						//System.out.println("You cliked the square at [ " + row + ", " + col + "]");
 						gameBoard[row][col].setState(playerTurn);
-						
-						checkForCaptures(row, col, playerTurn);
-						checkForWins(playerTurn);
 					
 						//this.repaint();
 						this.paintImmediately(0, 0, this.bWidth, this.bHeight);
 						this.changePlayerTurn();
 						checkForComputerMove(playerTurn);
+						
+						checkForCaptures(row, col, playerTurn);
+						checkForWins(playerTurn);
 						
 						//System.out.println("It is now the turn of " + playerTurn);
 						
@@ -579,27 +584,30 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 		try
 		{
 			boolean isFive = false;
-			if( upDown != 0 && rightLeft != 0 &&
+			if( !(upDown == 0 && rightLeft == 0) &&
+				gameBoard[r][c].getState() == pT &&
 				gameBoard[r + upDown][c + rightLeft].getState() == pT &&
 				gameBoard[r + (upDown * 2)][c + (rightLeft * 2)].getState() == pT &&
 				gameBoard[r + (upDown * 3)][c + (rightLeft * 3)].getState() == pT &&
-				gameBoard[r + (upDown * 4)][c + (rightLeft * 4)].getState() == pT &&
-				gameBoard[r + (upDown * 5)][c + (rightLeft * 5)].getState() == pT 
+				gameBoard[r + (upDown * 4)][c + (rightLeft * 4)].getState() == pT
 				)
 			{
 				System.out.println("FIVE IN A ROW");
 				
-				if(pT == this.PLAYER1_TURN)
+				gameBoard[r][c].setWinningSquare(true);
+				gameBoard[r + upDown][c + rightLeft].setWinningSquare(true);
+				gameBoard[r + (upDown * 2)][c + (rightLeft * 2)].setWinningSquare(true);
+				gameBoard[r + (upDown * 3)][c + (rightLeft * 3)].setWinningSquare(true);
+				gameBoard[r + (upDown * 4)][c + (rightLeft * 4)].setWinningSquare(true);
+				
+				
+				if(pT == PLAYER1_TURN)
 				{
 					System.out.println("Player 1 got 5");
-					//p1Captures = p1Captures + 10;
-					//myScoreBoard.setCaptures(p1Captures, playerTurn);
 					isFive = true;
 					gameOver = true;
 				}else {
 					System.out.println("Player 2 got 5");
-					//p2Captures = p2Captures + 10;
-					//myScoreBoard.setCaptures(p2Captures, playerTurn);
 					isFive = true;
 					gameOver = true;
 				}
