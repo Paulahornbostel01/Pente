@@ -2,12 +2,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class PenteGameBoard extends JPanel implements MouseListener{
+public class PenteGameBoard extends JPanel implements MouseListener, MouseMotionListener
+{
 	
 	/**
 	 * 
@@ -22,7 +24,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	public static final int PLAYER1_TURN = 1;
 	public static final int PLAYER2_TURN = -1;
 	public static final int MAX_CAPTURES = 10;
-	public static final int SLEEP_TIME = 100;
+	public static final int SLEEP_TIME = 400;
 
 	private int bWidth, bHeight;
 	
@@ -46,6 +48,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	private ComputerMoveGenerator p2ComputerPlayer = null;
 	
 	private boolean gameOver;
+	//private boolean didCapture = false;
 	
 	
 	public PenteGameBoard(int w, int h, PenteScore sb)
@@ -63,8 +66,6 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 		
 		squareW = bWidth/NUM_SQUARES_SIDE;
 		squareH = bHeight/NUM_SQUARES_SIDE;
-		
-		//testSquare = new PenteBoardSquare (0, 0, squareW, squareH);
 		
 		gameBoard = new PenteBoardSquare[NUM_SQUARES_SIDE][NUM_SQUARES_SIDE];
 		
@@ -88,6 +89,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	
 	
 	addMouseListener(this);
+	addMouseMotionListener(this);
 	//gameBoard
 	this.setFocusable(true);
 		
@@ -181,7 +183,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 		this.gameBoard[NUM_SQUARES_SIDE/2][NUM_SQUARES_SIDE/2].setState(BLACKSTONE);
 		this.darkStoneMove2Taken = false;
 		myScoreBoard.setPlayerTurn(playerTurn);
-		//changePlayerTurn();
+		changePlayerTurn();
 		//System.out.println("It is now the turn of " + playerTurn);
 		checkForComputerMove(playerTurn);
 		
@@ -241,16 +243,17 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 					{
 					
 						
-						//System.out.println("You cliked the square at [ " + row + ", " + col + "]");
-						gameBoard[row][col].setState(playerTurn);
+						//System.out.println("You clicked the square at [ " + row + ", " + col + "]");
 					
-						//this.repaint();
-						this.paintImmediately(0, 0, this.bWidth, this.bHeight);
+				
+						gameBoard[row][col].setState(playerTurn);
+						checkForCaptures(row, col, playerTurn);
+						this.paintImmediately(0,0, bWidth, bHeight);
+						
+						checkForWins(playerTurn);
 						this.changePlayerTurn();
 						checkForComputerMove(playerTurn);
-						
-						checkForCaptures(row, col, playerTurn);
-						checkForWins(playerTurn);
+				
 						
 						//System.out.println("It is now the turn of " + playerTurn);
 						
@@ -265,7 +268,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	
 	public  void checkForComputerMove(int whichPlayer)
 	{
-		if(whichPlayer == this.PLAYER1_TURN && this.p1IsComputer)
+		if(whichPlayer == PLAYER1_TURN && this.p1IsComputer)
 		{
 			int [] nextMove = this.p1ComputerPlayer.getComputerMove();
 			int newR = nextMove[0];
@@ -279,8 +282,9 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 			{
 				this.changePlayerTurn();
 				checkForComputerMove(playerTurn);
+				System.out.println("Move is " + playerTurn);
 			}
-		}else if (whichPlayer == this.PLAYER2_TURN && this.p2IsComputer)
+		}else if (whichPlayer == PLAYER2_TURN && this.p2IsComputer)
 		{
 			int [] nextMove = this.p2ComputerPlayer.getComputerMove();
 			int newR = nextMove[0];
@@ -294,6 +298,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 			{
 				this.changePlayerTurn(); 
 				checkForComputerMove(playerTurn);
+				System.out.println("Move is " + playerTurn);
 			}
 			
 		}
@@ -310,8 +315,8 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 			)
 		{
 			if(
-					r >= this.INNER_START && r <= this.INNER_END &&
-					c >= this.INNER_START && c <= this.INNER_END
+					r >= INNER_START && r <= INNER_END &&
+					c >= INNER_START && c <= INNER_END
 						)
 					{
 				
@@ -335,7 +340,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 		return darkStoneProblem;
 	}
 	
-/*	public void checkEnter(int enterX, int enterY)
+	public void checkEnter(int enterX, int enterY)
 	{
 		for(int row = 0; row < NUM_SQUARES_SIDE; row++)
 		{
@@ -359,7 +364,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 		}
 		
 		repaint();
-	}*/
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -397,8 +402,6 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	
 	public void mouseAlways(MouseEvent e) {
 		
-		//checkEnter(e.getX(), e.getY());
-		repaint();
 		
 	}
 	
@@ -451,8 +454,8 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	
 	public void checkForCaptures(int r, int c, int pT)
 	{
-		boolean didCapture;
 		//Horizontal Checks
+		boolean didCapture;
 		if(c<= NUM_SQUARES_SIDE - 4) didCapture = checkForCaptures(r, c, pT, 0, 1);
 		if(c>= 3) didCapture = checkForCaptures(r, c, pT, 0, -1);
 		//Vertical Checks
@@ -487,7 +490,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 						gameBoard[r + upDown][c + rightLeft].setState(EMPTY);
 						gameBoard[r + (upDown * 2) ][c+ (rightLeft * 2)].setState(EMPTY);
 						didCapture = true;
-						if(pT == this.PLAYER1_TURN)
+						if(pT == PLAYER1_TURN)
 						{
 							p1Captures = p1Captures + 2;
 							myScoreBoard.setCaptures(p1Captures, playerTurn);
@@ -514,7 +517,7 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	
 		public void checkForWins(int whichPlayer)
 	{
-		if(whichPlayer == this.PLAYER1_TURN)
+		if(whichPlayer == PLAYER1_TURN)
 		{
 			if(p1Captures >= MAX_CAPTURES)
 			{
@@ -630,6 +633,20 @@ public class PenteGameBoard extends JPanel implements MouseListener{
 	{
 		return gameBoard;
 		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+		checkEnter(e.getX(), e.getY());
+		repaint();
 	}
 	
 	

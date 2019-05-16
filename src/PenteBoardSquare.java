@@ -2,12 +2,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
-public class PenteBoardSquare extends JPanel implements MouseListener{
+public class PenteBoardSquare extends JPanel{
 
 	
 	/**
@@ -60,8 +58,8 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 		
 		
 	sState = PenteGameBoard.EMPTY;
-	//PenteBoardSquare.addMouseListener(this);
-	this.addMouseListener(this);
+	//this.addMouseListener(this);
+	//this.addMouseMotionListener(this);
 	this.setVisible(true);
 	
 	
@@ -235,7 +233,7 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 		return didYouClickMe;
 	}
 	
-/*	public boolean isEntered(int enterX, int enterY)
+	public boolean isEntered(int enterX, int enterY)
 	{
 		boolean didYouEnterMe = false;
 		
@@ -257,7 +255,7 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 		
 		
 		return didYouEnterMe;
-	}*/
+	}
 	
 	public void drawStoneStarting(Graphics g)
 	{
@@ -296,39 +294,6 @@ public class PenteBoardSquare extends JPanel implements MouseListener{
 	public void resetSquareColor()
 	{
 		sColor = new Color (92, 135, 196);
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-		sColor = hoverColor;
-		System.out.println("Entered!!");
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void setWinningSquare (boolean newState)

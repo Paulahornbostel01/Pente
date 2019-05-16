@@ -1,20 +1,79 @@
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 
 public class ComputerMoveGenerator {
 	
-	public static final int OFFENSE = 1;
-	public static final int DEFENSE = -1;
-	public static final int ONE_IN_ROW_DEF = 1;
-	public static final int TWO_IN_ROW_DEF = 2;
-	public static final int TWO_IN_ROW_OPEN = 3;
-	public static final int TWO_IN_ROW_CAP = 4; //We will adjust
+	//To Win Everything
+	
+	public static final int FIVE_IN_ROW_4_X = 600;
+	
+	public static final int FIVE_IN_ROW_4_ = 600;
+	
+	public static final int FIVE_IN_ROW_3_1 = 600;
+	
+	public static final int FIVE_IN_ROW_2_2 = 600;
+	
+	public static final int FIVE_IN_ROW_1_3 = 600;
+	
+	//Preventing five (four)
+	
+	public static final int PREVENT_FIVE_4_X = 550;
+	
+	public static final int PREVENT_FIVE_4_ = 500;
+	
+	public static final int PREVENT_FIVE_3_1 = 550;
+	
+	public static final int PREVENT_FIVE_2_2 = 550;
+	
+	public static final int PREVENT_FIVE_1_3 = 550;
+	
+	//Prevent capture -- OFFENSE
+	
+	public static final int PREVENT_CAPTURE_2_X = 400;
+	
+	//Captures
+	
+	public static final int CAPTURE = 450;
+	
+	//Preventing four (three)
+	
+	public static final int PREVENT_FOUR_3_ = 310;
+	
+	public static final int PREVENT_FOUR_3_X = 300;
+	
+	public static final int PREVENT_FOUR_2_1 = 300;
+	
+	public static final int PREVENT_FOUR_1_2 = 300;
+	
+	//Preventing three (two)
+	
+	public static final int PREVENT_THREE_2_X = 200;
+	
+	public static final int PREVENT_THREE_2_ = 200;
+	
+	
+	//Preventing two (one)
+
+	public static final int PREVENT_TWO_1_ = 100;
+	
+	//Offense
+	
+	public static final int TWO_IN_ROW_OFF = 50;
+
+	public static final int THREE_IN_ROW_OFF = 60;
+	
+	public static final int FOUR_IN_ROW_OFF = 80;
+	
+	
+
+	
+	
 	
 	PenteGameBoard myGame;
 	int myStone;
 	
 	/* Things Computer needs to do:
-	 * 
+	 * s
 	 * 1. Check if computer can win
 	 * 		i. check for captures
 	 * 		ii. check for FiveInARow
@@ -27,8 +86,7 @@ public class ComputerMoveGenerator {
 	 * 
 	 */
 	
-	ArrayList <CMObject> offense = new ArrayList <CMObject>();
-	ArrayList <CMObject> defense = new ArrayList <CMObject>();
+	ArrayList <CMObject> moves = new ArrayList <CMObject>();
 	
 	public ComputerMoveGenerator(PenteGameBoard gb, int stoneColor)
 	{
@@ -45,27 +103,38 @@ public class ComputerMoveGenerator {
 		newMove[0] = -1;
 		newMove[1] = -1;
 		
-		defense.clear();
-		offense.clear();
+		moves.clear();
 		
-		//findDefMoves();
-		//setDefPriorities();
+		findMoves();
+		sortPriorities();
 		
-		//findOffMoves();
+		printPriorities();
 		
-		newMove = generateRandomMove();
+		/*System.out.println("First Move: " + moves.get(0));
+		System.out.println("Last Move: " + moves.get(moves.size()-1));*/
 		
-	/*	if(defense.size() > 0)
+		if(moves.size() > 0)
 		{
-			int whichOne = (int)(Math.random() * defense.size());
-			CMObject ourMove = defense.get(whichOne);
-			newMove[0] = ourMove.getRow();
-			newMove[1] = ourMove.getCol();
+			
+			if(moves.get(0).getPriority() == moves.get(8).getPriority())
+			{
+				CMObject ourMove = moves.get((int)(Math.random() * moves.size()));
+				newMove[0] = ourMove.getRow();
+				newMove[1] = ourMove.getCol();
+				
+			}else {
+			
+			
+				//int whichOne = (int)(Math.random() * defense.size());
+				CMObject ourMove = moves.get(0);
+				newMove[0] = ourMove.getRow();
+				newMove[1] = ourMove.getCol();
+			}
 					
 					
 		}else {
 			newMove = generateRandomMove();
-		}*/
+		}
 		
 		
 		
@@ -81,14 +150,16 @@ public class ComputerMoveGenerator {
 		return newMove;
 	}
 	
-	/*public void setDefPriorities()
+	public void sortPriorities()
 	{
-		Comparator <CMObject> compareByPriority = (CMOject o1, CMObject o2) ->
-		o1.getPriorityInt().compareTo(o2.getPriorityInt());
+		/*Comparator <CMObject> compareByPriority = (CMObject o1, CMObject o2) ->
+		o1.getPriorityInt().compareTo(o2.getPriorityInt());*/
 		
-	}*/
+		Collections.sort(moves);
+		 
+	}
 	
-	public void findDefMoves()
+	public void findMoves()
 	{
 		for(int row = 0; row < PenteGameBoard.NUM_SQUARES_SIDE; row++)
 		{
@@ -97,11 +168,24 @@ public class ComputerMoveGenerator {
 				if(myGame.getBoard()[row][col].getState() == myStone * -1
 						
 						)
-				findOneDef(row, col);
-				findTwoDef(row, col);
-				//findThreeDef(row, col);
-				//findFourDef(row, col);
-				//findThreeCap(row, col);
+				{
+					findFourDef(row, col);
+					findThreeDef(row, col);
+					findTwoDef(row, col);
+					findOneDef(row, col);
+				
+				}
+				
+				
+				if(myGame.getBoard()[row][col].getState() == myStone)
+				{
+					//System.out.println("My Stone is " + myStone);
+					findFiveOff(row, col);
+					findFourOff(row, col);
+					findThreeOff(row, col);
+					findTwoOff(row, col);
+				}
+				
 			}
 		}
 	}
@@ -121,9 +205,9 @@ public class ComputerMoveGenerator {
 						CMObject newMove = new CMObject();
 						newMove.setRow(r + rL);
 						newMove.setCol(c + uD);
-						newMove.setPriority(ONE_IN_ROW_DEF);
-						newMove.setMoveType(DEFENSE);
-						defense.add(newMove);
+						newMove.setPriority(PREVENT_TWO_1_);
+						//newMove.setMoveType(DEFENSE);
+						moves.add(newMove);
 					}
 					
 					
@@ -146,25 +230,41 @@ public class ComputerMoveGenerator {
 			{
 				try
 				{
-					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone * -1)
+					
+					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone)
 					{
-						if(myGame.getBoard()[r + (rL *2)][c + (uD*2)].getState() == PenteGameBoard.EMPTY)
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == myStone)
 						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == PenteGameBoard.EMPTY)
+							{
+				
+							setMove(r+(rL*3), c+(uD*3), PREVENT_CAPTURE_2_X);
 							
+							}
+						}
+						
+					
+					
+					
+					
+					
+					}else if(myGame.getBoard()[r + rL][c + uD].getState() == myStone * -1)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == PenteGameBoard.EMPTY)
+						{
 							
 							if(isOnBoard(r-rL, c-uD) == false)
 							{
-								setDefMove(r+(rL*2), c+(uD*2), TWO_IN_ROW_DEF);
+								setMove(r+(rL*2), c+(uD*2), PREVENT_THREE_2_X);
 								
 							}else if (myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY)
 							{
-								setDefMove(r+(rL*2), c+(uD*2), TWO_IN_ROW_OPEN);
+								setMove(r+(rL*2), c+(uD*2), PREVENT_THREE_2_);
 								
 							}else if (myGame.getBoard()[r - rL][c - uD].getState() == myStone)
 							{
-								setDefMove(r+(rL*2), c+(uD*2), TWO_IN_ROW_CAP);
+								setMove(r+(rL*2), c+(uD*2), CAPTURE);
 							}
-								
 								
 								//if r-rl, c-uD is open
 								
@@ -173,11 +273,307 @@ public class ComputerMoveGenerator {
 								
 								//if r-rl,c-uD is Opponent (we don't care)
 								
-								
-								
 						}
+							
 					}
 					
+					
+				}catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.out.println("Gone off board");
+				}
+			}
+		}
+	}
+	
+	public void findThreeDef(int r, int c)
+	{
+		for(int rL = -1; rL <= 1; rL++)
+		{
+			for(int uD = -1; uD <= 1; uD++)
+			{
+				try
+				{
+						
+					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone * -1)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == myStone * -1)
+						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == PenteGameBoard.EMPTY)
+							{
+						
+								if(myGame.getBoard()[r + (rL*4)][c + (uD*4)].getState() == myStone * -1)
+								{
+									setMove(r+(rL*3), c+(uD*3), PREVENT_FIVE_3_1);
+								}else if(isOnBoard(r-rL, c-uD) == false)
+								{
+									setMove(r+ (rL*3), c+(uD*3), PREVENT_FOUR_3_X);
+									
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == myStone)
+								{
+									setMove(r+(rL*3), c+(uD*3), PREVENT_FOUR_3_X);
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY)
+								{
+									setMove(r+(rL*3), c+(uD*3), PREVENT_FOUR_3_);
+								}/*else if(myGame.getBoard()[r -(rL*2)][c - (uD*2)].getState() == myStone * -1)
+								{
+									setMove(r-rL, c-uD, THREE_IN_ROW_STOPFIVE);
+								} */
+							
+							
+							}
+						}
+						
+					}
+					
+				}catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.out.println("Gone off board");
+				}
+			}
+		}
+	}
+	
+	public void findFourDef(int r, int c)
+	{
+		for(int rL = -1; rL <= 1; rL++)
+		{
+			for(int uD = -1; uD <= 1; uD++)
+			{
+				try
+				{
+						
+					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone * -1)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == myStone * -1)
+						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == myStone * -1)
+							{
+							
+							
+							if(myGame.getBoard()[r + (rL*4)][c + (uD*4)].getState() == PenteGameBoard.EMPTY)
+							{
+						
+								if(isOnBoard(r-rL, c-uD) == false)
+								{
+									setMove(r+ (rL*4), c+(uD*4), PREVENT_FIVE_4_X);
+									
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == myStone)
+								{
+									setMove(r+(rL*4), c+(uD*4), PREVENT_FIVE_4_X);
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY)
+								{
+									setMove(r+(rL*4), c+(uD*4), PREVENT_FIVE_4_);
+								}
+							
+							}
+							}
+						}
+						
+					}
+					
+				}catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.out.println("Gone off board");
+				}
+			}
+		}
+	}
+	
+	
+	
+	public void findTwoOff(int r, int c)
+	{
+		//We start here on Wed
+		//This runs in the 8 directions
+		for(int rL = -1; rL <= 1; rL++)
+		{
+			for(int uD = -1; uD <= 1; uD++)
+			{
+				try
+				{
+					if(myGame.getBoard()[r + rL][c + uD].getState() == PenteGameBoard.EMPTY)
+					{
+							if(isOnBoard(r-rL, c-uD) == false)
+							{
+								setMove(r + rL, c + uD, TWO_IN_ROW_OFF);
+								
+							}else if (myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY    
+									&&
+									myGame.getBoard()[r - rL][c - uD].getState() != myStone * -1 )
+							{
+								setMove(r + rL, c + uD, TWO_IN_ROW_OFF);
+								
+							}
+							
+					}
+					
+					
+				}catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.out.println("Gone off board");
+				}
+			}
+		}
+	}
+	
+	public void findThreeOff(int r, int c)
+	{
+		for(int rL = -1; rL <= 1; rL++)
+		{
+			for(int uD = -1; uD <= 1; uD++)
+			{
+				try
+				{
+						
+					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == PenteGameBoard.EMPTY)
+							{
+							
+							if(isOnBoard(r-rL, c-uD) == false)
+							{
+								setMove(r+ (rL*2), c+(uD*2), THREE_IN_ROW_OFF);
+							}else if(myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY)
+							{
+								setMove(r+(rL*2), c+(uD*2), THREE_IN_ROW_OFF);
+							}else if(myGame.getBoard()[r - rL][c - uD].getState() == myStone * -1)
+							{
+								setMove(r+(rL*2), c+(uD*2), THREE_IN_ROW_OFF);
+							}
+											
+							}	
+							
+					}
+					
+				}catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.out.println("Gone off board");
+				}
+			}
+		}
+	}
+	
+	public void findFourOff(int r, int c)
+	{
+		for(int rL = -1; rL <= 1; rL++)
+		{
+			for(int uD = -1; uD <= 1; uD++)
+			{
+				try
+				{
+						
+					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == myStone)
+						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == PenteGameBoard.EMPTY)
+							{
+							
+							
+							
+								
+								if(isOnBoard(r-rL, c-uD) == false)
+								{
+									setMove(r+ (rL*3), c+(uD*3), FOUR_IN_ROW_OFF);
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY)
+								{
+									setMove(r+(rL*3), c+(uD*3), FOUR_IN_ROW_OFF);
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == myStone * -1)
+								{
+									setMove(r+(rL*3), c+(uD*3), FOUR_IN_ROW_OFF);
+								}
+												
+							}
+						}
+						
+							
+					}
+					
+				}catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.out.println("Gone off board");
+				}
+			}
+		}
+	}
+	
+	public void findFiveOff(int r, int c)
+	{
+		for(int rL = -1; rL <= 1; rL++)
+		{
+			for(int uD = -1; uD <= 1; uD++)
+			{
+				try
+				{
+					if(myGame.getBoard()[r + rL][c + uD].getState() == myStone)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == PenteGameBoard.EMPTY)
+						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == myStone)
+							{
+								if(myGame.getBoard()[r + (rL*4)][c + (uD*4)].getState() == myStone)
+								{
+									setMove(r+(rL*2), c+(uD*2), FIVE_IN_ROW_2_2);
+								}
+							}	
+							
+						}
+					
+					
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == myStone)
+						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == PenteGameBoard.EMPTY)
+							{
+								if(myGame.getBoard()[r + (rL*4)][c + (uD*4)].getState() == myStone)
+								{
+									setMove(r+(rL*3), c+(uD*3), FIVE_IN_ROW_3_1);
+								}
+							}
+							
+							
+							
+							
+							
+							
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == myStone)
+							{
+								if(myGame.getBoard()[r + (rL*4)][c + (uD*4)].getState() == PenteGameBoard.EMPTY)
+								{
+							
+							
+							
+								
+								if(isOnBoard(r-rL, c-uD) == false)
+								{
+									setMove(r+ (rL*4), c+(uD*4), FIVE_IN_ROW_4_X);
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == PenteGameBoard.EMPTY)
+								{
+									setMove(r+(rL*4), c+(uD*4), FIVE_IN_ROW_4_);
+								}else if(myGame.getBoard()[r - rL][c - uD].getState() == myStone * -1)
+								{
+									setMove(r+(rL*4), c+(uD*4), FIVE_IN_ROW_4_X);
+								}
+								
+								}
+												
+							}
+						}
+						
+							
+					}else if(myGame.getBoard()[r + rL][c + uD].getState() == PenteGameBoard.EMPTY)
+					{
+						if(myGame.getBoard()[r + (rL*2)][c + (uD*2)].getState() == myStone)
+						{
+							if(myGame.getBoard()[r + (rL*3)][c + (uD*3)].getState() == myStone)
+							{
+								if(myGame.getBoard()[r + (rL*4)][c + (uD*4)].getState() == myStone)
+								{
+									setMove(r+(rL*4), c+(uD*4), FIVE_IN_ROW_1_3);
+								}
+							}	
+						}
+					}
 					
 				}catch (ArrayIndexOutOfBoundsException e)
 				{
@@ -203,20 +599,17 @@ public class ComputerMoveGenerator {
 		return onBoard;
 	}
 	
-	public void setDefMove(int r, int c, int p)
+	public void setMove(int r, int c, int p)
 	{
 		CMObject newMove = new CMObject();
 		newMove.setRow(r);
 		newMove.setCol(c);
 		newMove.setPriority(p);
-		newMove.setMoveType(DEFENSE);
-		defense.add(newMove);
+		//newMove.setMoveType(DEFENSE);
+		moves.add(newMove);
+	
 	}
 	
-	public void findOffMoves()
-	{
-		
-	}
 	
 	public int [] generateRandomMove()
 	{
@@ -243,9 +636,15 @@ public class ComputerMoveGenerator {
 	
 	public void sleepForAMove() throws InterruptedException
 	{
-		Thread currThread = Thread.currentThread();
-		currThread.sleep(PenteGameBoard.SLEEP_TIME);
+		Thread.sleep(PenteGameBoard.SLEEP_TIME);
 	}
 	
+	public void printPriorities()
+	{
+		for(CMObject m: moves) //loop for iterables
+		{
+			System.out.println(m);
+		}
+	}
 
 }
